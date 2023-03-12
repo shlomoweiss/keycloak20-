@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak  
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:20.0.3
+        resources:
+          requests:
+            cpu: 500m
+            memory: 2048Mi
+          limits:
+            memory: "2049Mi"
+            cpu: "600m" 
+        ports:
+          - containerPort: 8080
+          - containerPort: 8443
+        env:
+            - name: KEYCLOAK_ADMIN
+              value: "admin"
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              value: "admin" 
+        args: ['start', '--http-enabled=true', '--hostname-strict=false','--https-certificate-file=/mnt/keycloak.pem', '--https-certificate-key-file=/mnt/keycloak-key.pem']
+        volumeMounts:
+            - mountPath: /mnt
+              name: test-volume
+      volumes:
+      - name: test-volume
+        hostPath:
+         path: /home/shlomo/keycloak-manifests/cert
+         
+         

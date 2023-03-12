@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:    
+  sso:
+    image: quay.io/keycloak/keycloak:20.0.3
+    container_name: "keycloak"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/shlomo/keycloak-docker-compose/cert:/mnt
+    command:
+      - start
+      - --http-enabled=true
+      - --hostname-strict=false
+      - --https-certificate-file=/mnt/keycloak.pem
+      - --https-certificate-key-file=/mnt/keycloak-key.pem
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    ports:
+      - "8080:8080" 
+      - "8443:8443" 
+    networks:
+      - internal
+networks:
+  internal:
+    driver: bridge
+    driver_opts:
+      # Openstack spezifisch, kann auf 1500 gelassen werden wenn ihr auf
+      # Bare Metal lauft. 
+      com.docker.network.driver.mtu: 1450
+
+volumes:
+  postgres_data:
+  conf:
+  vhost:
+  html:
+  certs:
+  acme:
